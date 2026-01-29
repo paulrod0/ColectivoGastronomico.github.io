@@ -1,0 +1,1468 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colectivo Gastronómico</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #0066cc;
+            --dark-blue: #004080;
+            --light-blue: #3399ff;
+            --silver: #c0c0c0;
+            --light-silver: #e8e8e8;
+            --dark-silver: #808080;
+            --green: #00a86b;
+            --dark-green: #008556;
+            --light-green: #00cc85;
+            --black: #1a1a1a;
+            --white: #ffffff;
+            --text-dark: #2d2d2d;
+            --text-light: #666666;
+            --border: #d4d4d4;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --shadow-hover: rgba(0, 102, 204, 0.2);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, var(--light-silver) 0%, var(--white) 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--black) 0%, var(--primary-blue) 100%);
+            color: white;
+            padding: 1.5rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: var(--white);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .admin-badge {
+            background: var(--green);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(0, 168, 107, 0.3);
+        }
+
+        button {
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 168, 107, 0.25);
+            position: relative;
+            overflow: hidden;
+        }
+
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        button:hover {
+            background: var(--light-green);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 168, 107, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .auth-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--dark-blue) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .auth-box {
+            background: var(--white);
+            padding: 3rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.5s ease;
+            border-top: 4px solid var(--green);
+        }
+
+        .auth-box h2 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            color: var(--black);
+            font-weight: 700;
+        }
+
+        .auth-box p {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 0.875rem;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: var(--white);
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-blue);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+            animation: shake 0.5s ease;
+        }
+
+        .success-message {
+            color: var(--green);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        .success-message.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .auth-switch {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-light);
+        }
+
+        .auth-switch a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .auth-switch a:hover {
+            color: var(--dark-blue);
+            text-decoration: underline;
+        }
+
+        small {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 2px solid var(--border);
+        }
+
+        .tab {
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            color: var(--text-light);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: none;
+        }
+
+        .tab:hover {
+            color: var(--primary-blue);
+            background: rgba(0, 102, 204, 0.05);
+            transform: none;
+        }
+
+        .tab.active {
+            color: var(--primary-blue);
+            border-bottom-color: var(--primary-blue);
+            background: rgba(0, 102, 204, 0.05);
+        }
+
+        .filters {
+            background: var(--white);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 3rem;
+            box-shadow: 0 2px 12px var(--shadow);
+            border: 1px solid var(--border);
+        }
+
+        .filters h2 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            color: var(--black);
+            font-weight: 700;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .restaurant-card {
+            background: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px var(--shadow);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            animation: fadeInUp 0.6s ease backwards;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 32px var(--shadow-hover);
+            border-color: var(--primary-blue);
+        }
+
+        .restaurant-card:active {
+            transform: translateY(-4px) scale(1.01);
+        }
+
+        .restaurant-image {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            background: linear-gradient(135deg, var(--light-silver), var(--silver));
+            transition: transform 0.4s ease;
+        }
+
+        .restaurant-card:hover .restaurant-image {
+            transform: scale(1.1);
+        }
+
+        .restaurant-content {
+            padding: 1.5rem;
+        }
+
+        .restaurant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 1rem;
+        }
+
+        .restaurant-name {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--black);
+            line-height: 1.3;
+        }
+
+        .price-badge {
+            background: var(--primary-blue);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+        }
+
+        .restaurant-info {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-light);
+        }
+
+        .info-icon {
+            width: 18px;
+            height: 18px;
+            color: var(--primary-blue);
+        }
+
+        .restaurant-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-map {
+            flex: 1;
+            background: var(--primary-blue);
+            padding: 0.75rem;
+            text-align: center;
+            text-decoration: none;
+            color: white;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 102, 204, 0.25);
+        }
+
+        .btn-map:hover {
+            background: var(--dark-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 102, 204, 0.4);
+        }
+
+        .btn-delete {
+            background: var(--silver);
+            padding: 0.75rem 1rem;
+            border-radius: 8px;
+            color: var(--black);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: white;
+            transform: translateY(-2px) rotate(10deg);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 150;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideUp 0.3s ease;
+            border-top: 4px solid var(--green);
+        }
+
+        .modal-content h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            color: var(--black);
+            font-weight: 700;
+        }
+
+        .search-restaurant {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            box-shadow: 0 8px 24px var(--shadow);
+            z-index: 10;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            cursor: pointer;
+            border-bottom: 1px solid var(--border);
+            transition: all 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: rgba(0, 102, 204, 0.05);
+            border-left: 4px solid var(--primary-blue);
+        }
+
+        .search-result-item:last-child {
+            border-bottom: none;
+        }
+
+        .result-name {
+            font-weight: 600;
+            color: var(--black);
+            margin-bottom: 0.25rem;
+        }
+
+        .result-address {
+            font-size: 0.875rem;
+            color: var(--text-light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .empty-state h3 {
+            font-size: 1.8rem;
+            color: var(--black);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .empty-state p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s infinite;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+
+        @keyframes dots {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.5rem; }
+            .header-content { flex-direction: column; align-items: flex-start; }
+            .filter-grid { grid-template-columns: 1fr; }
+            .restaurants-grid { grid-template-columns: 1fr; }
+            .modal-content { padding: 1.5rem; }
+            .tabs { flex-wrap: wrap; }
+            .tab { padding: 0.75rem 1rem; }
+        }
+
+        .restaurant-card:nth-child(1) { animation-delay: 0.1s; }
+        .restaurant-card:nth-child(2) { animation-delay: 0.15s; }
+        .restaurant-card:nth-child(3) { animation-delay: 0.2s; }
+        .restaurant-card:nth-child(4) { animation-delay: 0.25s; }
+        .restaurant-card:nth-child(5) { animation-delay: 0.3s; }
+        .restaurant-card:nth-child(6) { animation-delay: 0.35s; }
+
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-silver);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--silver);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-silver);
+        }
+    </style>
+</head>
+<body>
+    <div id="authContainer" class="auth-container">
+        <div class="auth-box">
+            <div id="loginForm">
+                <h2>Iniciar Sesión</h2>
+                <p>Accede a tu cuenta del Colectivo Gastronómico</p>
+                <div class="form-group">
+                    <label for="loginEmail">Email:</label>
+                    <input type="email" id="loginEmail" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Contraseña:</label>
+                    <input type="password" id="loginPassword" placeholder="••••••••" required>
+                </div>
+                <div id="loginError" class="error-message"></div>
+                <button onclick="login()" style="width: 100%;">Entrar</button>
+                <div class="auth-switch">
+                    ¿No tienes cuenta? <a onclick="showRegisterForm()">Regístrate aquí</a>
+                </div>
+            </div>
+
+            <div id="registerForm" style="display: none;">
+                <h2>Registro de Socio</h2>
+                <p>Únete al Colectivo Gastronómico</p>
+                <div class="form-group">
+                    <label for="regName">Nombre Completo: *</label>
+                    <input type="text" id="regName" placeholder="Juan García" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email: *</label>
+                    <input type="email" id="regEmail" placeholder="tu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPhone">Teléfono del Grupo WhatsApp: *</label>
+                    <input type="tel" id="regPhone" placeholder="+34606123456 o +34 606 12 34 56" required>
+                    <small>Escríbelo con o sin espacios. Debe estar en el grupo de WhatsApp.</small>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Contraseña: *</label>
+                    <input type="password" id="regPassword" placeholder="Mínimo 6 caracteres" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPasswordConfirm">Confirmar Contraseña: *</label>
+                    <input type="password" id="regPasswordConfirm" placeholder="Repite la contraseña" required>
+                </div>
+                <div id="registerError" class="error-message"></div>
+                <div id="registerSuccess" class="success-message"></div>
+                <button onclick="register()" style="width: 100%;">Registrarse</button>
+                <div class="auth-switch">
+                    ¿Ya tienes cuenta? <a onclick="showLoginForm()">Inicia sesión aquí</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainApp" style="display: none;">
+        <header>
+            <div class="header-content">
+                <h1>Colectivo Gastronómico</h1>
+                <div class="user-info">
+                    <span class="user-name" id="userName"></span>
+                    <span id="adminBadge" class="admin-badge" style="display: none;">Admin</span>
+                    <button onclick="openAddModal()">+ Añadir Restaurante</button>
+                    <button onclick="logout()">Salir</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="container">
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('all', event)">Todos los Restaurantes</button>
+                <button class="tab" onclick="switchTab('mine', event)">Mis Restaurantes</button>
+            </div>
+
+            <div class="filters">
+                <h2>Filtrar Restaurantes</h2>
+                <div class="filter-grid">
+                    <div class="form-group">
+                        <label for="filterPrice">Precio:</label>
+                        <select id="filterPrice" onchange="filterRestaurants()">
+                            <option value="">Todos</option>
+                            <option value="€">€ - Económico</option>
+                            <option value="€€">€€ - Moderado</option>
+                            <option value="€€€">€€€ - Alto</option>
+                            <option value="€€€€">€€€€ - Lujo</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterCuisine">Tipo de Comida:</label>
+                        <select id="filterCuisine" onchange="filterRestaurants()">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterCountry">País:</label>
+                        <select id="filterCountry" onchange="updateCityFilter(); filterRestaurants()">
+                            <option value="">Todos</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="filterCity">Ciudad:</label>
+                        <select id="filterCity" onchange="filterRestaurants()">
+                            <option value="">Todas</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div id="restaurantsContainer" class="restaurants-grid">
+                <div class="loading">Cargando restaurantes</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2>Añadir Restaurante</h2>
+            
+            <div class="search-restaurant">
+                <div class="form-group">
+                    <label for="searchPlace">Buscar restaurante en Google (opcional):</label>
+                    <input type="text" id="searchPlace" placeholder="Nombre del restaurante..." 
+                           oninput="searchGooglePlaces()" autocomplete="off">
+                    <small style="display: block; margin-top: 0.5rem;">
+                        O completa el formulario manualmente abajo ↓
+                    </small>
+                </div>
+                <div id="searchResults" class="search-results" style="display: none;"></div>
+            </div>
+
+            <div id="manualForm">
+                <div class="form-group">
+                    <label for="manualName">Nombre del Restaurante: *</label>
+                    <input type="text" id="manualName" placeholder="Ej: La Taberna del Alabardero" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="manualAddress">Dirección Completa: *</label>
+                    <input type="text" id="manualAddress" placeholder="Calle, número, código postal" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="manualCity">Ciudad: *</label>
+                    <input type="text" id="manualCity" placeholder="Ej: Sevilla" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="manualCountry">País: *</label>
+                    <input type="text" id="manualCountry" placeholder="Ej: España" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cuisine">Tipo de Comida: *</label>
+                    <input type="text" id="cuisine" placeholder="Italiana, Japonesa, etc." required>
+                </div>
+
+                <div class="form-group">
+                    <label for="price">Categoría de Precio: *</label>
+                    <select id="price" required>
+                        <option value="">Selecciona...</option>
+                        <option value="€">€ - Económico</option>
+                        <option value="€€">€€ - Moderado</option>
+                        <option value="€€€">€€€ - Alto</option>
+                        <option value="€€€€">€€€€ - Lujo</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="photoUrl">URL de Foto (opcional):</label>
+                    <input type="url" id="photoUrl" placeholder="https://ejemplo.com/foto.jpg">
+                    <small style="display: block; margin-top: 0.5rem;">
+                        Copia la URL de una foto del restaurante
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="notes">Notas (opcional):</label>
+                    <textarea id="notes" rows="3" placeholder="¿Qué te gustó? ¿Algún plato recomendado?"></textarea>
+                </div>
+
+                <div id="addRestaurantError" class="error-message"></div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button onclick="saveRestaurant()" style="flex: 1;">Guardar Restaurante</button>
+                    <button onclick="closeAddModal()" style="flex: 1; background: #666;">Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK v9+ (Modular) -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { getFirestore, collection, addDoc, getDocs, doc, getDoc, setDoc, deleteDoc, query, where, orderBy, onSnapshot, serverTimestamp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // =====================================================
+        // CONFIGURACIÓN DE FIREBASE
+        // =====================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyA5wfNOy5dWEI6dJxSPDc24k5_7scvGos4",
+            authDomain: "cgporsche-339ca.firebaseapp.com",
+            projectId: "cgporsche-339ca",
+            storageBucket: "cgporsche-339ca.firebasestorage.app",
+            messagingSenderId: "74226175454",
+            appId: "1:74226175454:web:84a951671423343309214f",
+            measurementId: "G-40LLBRLYLS"
+        };
+
+        // Inicializar Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        // =====================================================
+        // CONFIGURACIÓN DE NÚMEROS AUTORIZADOS
+        // =====================================================
+        const ADMIN_PHONES = ['+34 600 00 81 39'];
+
+        const AUTHORIZED_PHONES = [
+            '+34650068486',
+            '+1 (201) 240-8962', '+1 (305) 915-0077', '+1 (809) 747-9770',
+            // ... (todos los números del grupo - los mismo que antes)
+        ];
+
+        // State
+        let currentUser = null;
+        let currentUserData = null;
+        let restaurants = [];
+        let selectedPlace = null;
+        let searchTimeout = null;
+        let autocompleteService = null;
+        let placesService = null;
+        let currentTab = 'all';
+        let unsubscribeRestaurants = null;
+
+        // =====================================================
+        // FUNCIONES DE UTILIDAD
+        // =====================================================
+        function normalizePhone(phone) {
+            return phone.replace(/[\s\-\(\)]/g, '');
+        }
+
+        function isPhoneAuthorized(phone) {
+            const normalized = normalizePhone(phone);
+            return AUTHORIZED_PHONES.some(authPhone => 
+                normalizePhone(authPhone) === normalized
+            );
+        }
+
+        function isAdmin() {
+            if (!currentUserData) return false;
+            const normalized = normalizePhone(currentUserData.phone);
+            return ADMIN_PHONES.some(adminPhone => 
+                normalizePhone(adminPhone) === normalized
+            );
+        }
+
+        // =====================================================
+        // AUTENTICACIÓN CON FIREBASE
+        // =====================================================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                // Obtener datos del usuario desde Firestore
+                const userDocRef = doc(db, 'users', user.uid);
+                const userDoc = await getDoc(userDocRef);
+                if (userDoc.exists()) {
+                    currentUserData = { uid: user.uid, ...userDoc.data() };
+                    showMainApp();
+                } else {
+                    signOut(auth);
+                }
+            } else {
+                currentUser = null;
+                currentUserData = null;
+            }
+        });
+
+        function showLoginForm() {
+            document.getElementById('loginForm').style.display = 'block';
+            document.getElementById('registerForm').style.display = 'none';
+            clearAuthErrors();
+        }
+
+        function showRegisterForm() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            clearAuthErrors();
+        }
+
+        function clearAuthErrors() {
+            document.getElementById('loginError').classList.remove('show');
+            document.getElementById('registerError').classList.remove('show');
+            document.getElementById('registerSuccess').classList.remove('show');
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            const errorDiv = document.getElementById('loginError');
+
+            if (!email || !password) {
+                errorDiv.textContent = 'Por favor, completa todos los campos';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                console.error('Error login:', error);
+                if (error.code === 'auth/user-not-found') {
+                    errorDiv.textContent = 'No existe una cuenta con este email';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorDiv.textContent = 'Contraseña incorrecta';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorDiv.textContent = 'Email inválido';
+                } else {
+                    errorDiv.textContent = 'Error al iniciar sesión: ' + error.message;
+                }
+                errorDiv.classList.add('show');
+            }
+        }
+
+        async function register() {
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const phone = document.getElementById('regPhone').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const passwordConfirm = document.getElementById('regPasswordConfirm').value;
+            const errorDiv = document.getElementById('registerError');
+            const successDiv = document.getElementById('registerSuccess');
+
+            errorDiv.classList.remove('show');
+            successDiv.classList.remove('show');
+
+            if (!name || !email || !phone || !password || !passwordConfirm) {
+                errorDiv.textContent = 'Por favor, completa todos los campos';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            if (password.length < 6) {
+                errorDiv.textContent = 'La contraseña debe tener al menos 6 caracteres';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = 'Las contraseñas no coinciden';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            try {
+                // Normalizar el teléfono para la búsqueda
+                const phoneNormalized = normalizePhone(phone);
+                
+                // Buscar el número en la colección de números autorizados
+                const authorizedPhonesRef = collection(db, 'authorizedPhones');
+                const phoneQuery = query(authorizedPhonesRef, where('phoneNormalized', '==', phoneNormalized));
+                const phoneSnapshot = await getDocs(phoneQuery);
+
+                if (phoneSnapshot.empty) {
+                    errorDiv.textContent = 'Este número de teléfono no está autorizado. Debe pertenecer al grupo de WhatsApp.';
+                    errorDiv.classList.add('show');
+                    return;
+                }
+
+                // Verificar si el teléfono ya está registrado
+                const usersRef = collection(db, 'users');
+                const userPhoneQuery = query(usersRef, where('phoneNormalized', '==', phoneNormalized));
+                const userPhoneSnapshot = await getDocs(userPhoneQuery);
+
+                if (!userPhoneSnapshot.empty) {
+                    errorDiv.textContent = 'Este número de teléfono ya está registrado';
+                    errorDiv.classList.add('show');
+                    return;
+                }
+
+                // Crear usuario en Firebase Auth
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                
+                // Guardar datos adicionales en Firestore
+                const userDocRef = doc(db, 'users', userCredential.user.uid);
+                await setDoc(userDocRef, {
+                    name: name,
+                    email: email,
+                    phone: phone,
+                    phoneNormalized: phoneNormalized,
+                    dateCreated: serverTimestamp()
+                });
+
+                successDiv.textContent = '¡Registro exitoso! Redirigiendo...';
+                successDiv.classList.add('show');
+
+                // Limpiar formulario
+                document.getElementById('regName').value = '';
+                document.getElementById('regEmail').value = '';
+                document.getElementById('regPhone').value = '';
+                document.getElementById('regPassword').value = '';
+                document.getElementById('regPasswordConfirm').value = '';
+
+            } catch (error) {
+                console.error('Error registro:', error);
+                if (error.code === 'auth/email-already-in-use') {
+                    errorDiv.textContent = 'Ya existe una cuenta con este email';
+                } else if (error.code === 'auth/invalid-email') {
+                    errorDiv.textContent = 'Email inválido';
+                } else if (error.code === 'auth/weak-password') {
+                    errorDiv.textContent = 'La contraseña es demasiado débil';
+                } else {
+                    errorDiv.textContent = 'Error al registrarse: ' + error.message;
+                }
+                errorDiv.classList.add('show');
+            }
+        }
+
+        function logout() {
+            signOut(auth);
+            if (unsubscribeRestaurants) {
+                unsubscribeRestaurants();
+            }
+            document.getElementById('authContainer').style.display = 'flex';
+            document.getElementById('mainApp').style.display = 'none';
+            showLoginForm();
+        }
+
+        function showMainApp() {
+            document.getElementById('authContainer').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userName').textContent = currentUserData.name;
+            
+            if (isAdmin()) {
+                document.getElementById('adminBadge').style.display = 'inline-block';
+            }
+            
+            loadRestaurants();
+            switchTab('all', { target: document.querySelector('.tab') });
+        }
+
+        // =====================================================
+        // GESTIÓN DE RESTAURANTES CON FIREBASE
+        // =====================================================
+        function loadRestaurants() {
+            // Escuchar cambios en tiempo real
+            const restaurantsRef = collection(db, 'restaurants');
+            const q = query(restaurantsRef, orderBy('dateAdded', 'desc'));
+            
+            unsubscribeRestaurants = onSnapshot(q, (snapshot) => {
+                restaurants = [];
+                snapshot.forEach((docSnap) => {
+                    restaurants.push({ id: docSnap.id, ...docSnap.data() });
+                });
+                filterRestaurants();
+                updateFilters();
+            }, (error) => {
+                console.error('Error loading restaurants:', error);
+            });
+        }
+
+        async function saveRestaurant() {
+            const manualName = document.getElementById('manualName').value.trim();
+            const manualAddress = document.getElementById('manualAddress').value.trim();
+            const manualCity = document.getElementById('manualCity').value.trim();
+            const manualCountry = document.getElementById('manualCountry').value.trim();
+            const cuisine = document.getElementById('cuisine').value.trim();
+            const price = document.getElementById('price').value;
+            const photoUrl = document.getElementById('photoUrl').value.trim();
+            const notes = document.getElementById('notes').value.trim();
+            const errorDiv = document.getElementById('addRestaurantError');
+
+            errorDiv.classList.remove('show');
+
+            if (!manualName || !manualAddress || !manualCity || !manualCountry || !cuisine || !price) {
+                errorDiv.textContent = 'Por favor, completa todos los campos obligatorios marcados con *';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            // Verificar duplicados
+            const restaurantsRef = collection(db, 'restaurants');
+            const duplicateQuery = query(
+                restaurantsRef,
+                where('name', '==', manualName),
+                where('city', '==', manualCity)
+            );
+            const duplicateSnapshot = await getDocs(duplicateQuery);
+
+            if (!duplicateSnapshot.empty) {
+                errorDiv.textContent = 'Este restaurante ya existe en la base de datos';
+                errorDiv.classList.add('show');
+                return;
+            }
+
+            let restaurant = {
+                name: manualName,
+                address: manualAddress,
+                city: manualCity,
+                country: manualCountry,
+                cuisine: cuisine,
+                price: price,
+                photo: photoUrl || null,
+                notes: notes,
+                lat: null,
+                lng: null,
+                addedBy: currentUser.uid,
+                addedByName: currentUserData.name,
+                dateAdded: serverTimestamp()
+            };
+
+            if (selectedPlace) {
+                restaurant.lat = selectedPlace.geometry.location.lat();
+                restaurant.lng = selectedPlace.geometry.location.lng();
+                if (selectedPlace.photos && selectedPlace.photos.length > 0) {
+                    restaurant.photo = selectedPlace.photos[0].getUrl({maxWidth: 600});
+                }
+            }
+
+            try {
+                await addDoc(collection(db, 'restaurants'), restaurant);
+                closeAddModal();
+            } catch (error) {
+                console.error('Error adding restaurant:', error);
+                errorDiv.textContent = 'Error al guardar el restaurante';
+                errorDiv.classList.add('show');
+            }
+        }
+
+        async function deleteRestaurant(id, addedBy) {
+            if (!isAdmin() && addedBy !== currentUser.uid) {
+                alert('No tienes permiso para eliminar este restaurante');
+                return;
+            }
+
+            if (confirm('¿Estás seguro de que quieres eliminar este restaurante?')) {
+                try {
+                    await deleteDoc(doc(db, 'restaurants', id));
+                } catch (error) {
+                    console.error('Error deleting restaurant:', error);
+                    alert('Error al eliminar el restaurante');
+                }
+            }
+        }
+
+        // =====================================================
+        // RENDERIZADO Y FILTROS
+        // =====================================================
+        function switchTab(tab, event) {
+            currentTab = tab;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+            filterRestaurants();
+        }
+
+        function filterRestaurants() {
+            const priceFilter = document.getElementById('filterPrice').value;
+            const cuisineFilter = document.getElementById('filterCuisine').value;
+            const countryFilter = document.getElementById('filterCountry').value;
+            const cityFilter = document.getElementById('filterCity').value;
+
+            let filtered = restaurants;
+
+            if (currentTab === 'mine') {
+                filtered = filtered.filter(r => r.addedBy === currentUser.uid);
+            }
+
+            if (priceFilter) filtered = filtered.filter(r => r.price === priceFilter);
+            if (cuisineFilter) filtered = filtered.filter(r => r.cuisine === cuisineFilter);
+            if (countryFilter) filtered = filtered.filter(r => r.country === countryFilter);
+            if (cityFilter) filtered = filtered.filter(r => r.city === cityFilter);
+
+            renderRestaurants(filtered);
+        }
+
+        function updateFilters() {
+            const cuisines = [...new Set(restaurants.map(r => r.cuisine))].sort();
+            document.getElementById('filterCuisine').innerHTML = '<option value="">Todos</option>' +
+                cuisines.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            const countries = [...new Set(restaurants.map(r => r.country))].sort();
+            document.getElementById('filterCountry').innerHTML = '<option value="">Todos</option>' +
+                countries.map(c => `<option value="${c}">${c}</option>`).join('');
+
+            updateCityFilter();
+        }
+
+        function updateCityFilter() {
+            const countryFilter = document.getElementById('filterCountry').value;
+            const filtered = countryFilter ? restaurants.filter(r => r.country === countryFilter) : restaurants;
+            const cities = [...new Set(filtered.map(r => r.city))].sort();
+            document.getElementById('filterCity').innerHTML = '<option value="">Todas</option>' +
+                cities.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        function renderRestaurants(restaurantList = restaurants) {
+            const container = document.getElementById('restaurantsContainer');
+            
+            if (restaurantList.length === 0) {
+                const msg = currentTab === 'mine' ? 'No has añadido ningún restaurante todavía' : 
+                            'No hay restaurantes todavía';
+                container.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1 / -1;">
+                        <h3>${msg}</h3>
+                        <p>Añade el primer restaurante al colectivo</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = restaurantList.map(r => `
+                <div class="restaurant-card">
+                    ${r.photo ? `<img src="${r.photo}" alt="${r.name}" class="restaurant-image">` : 
+                               `<div class="restaurant-image"></div>`}
+                    <div class="restaurant-content">
+                        <div class="restaurant-header">
+                            <h3 class="restaurant-name">${r.name}</h3>
+                            <span class="price-badge">${r.price}</span>
+                        </div>
+                        <div class="restaurant-info">
+                            <div class="info-item">
+                                <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3"/>
+                                </svg>
+                                ${r.cuisine}
+                            </div>
+                            <div class="info-item">
+                                <svg class="info-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                </svg>
+                                ${r.city}, ${r.country}
+                            </div>
+                            <div class="info-item" style="font-size: 0.85rem;">${r.address}</div>
+                            ${r.notes ? `<div class="info-item" style="margin-top: 0.5rem; font-style: italic;">"${r.notes}"</div>` : ''}
+                            <div class="info-item" style="font-size: 0.85rem; margin-top: 0.5rem;">
+                                Añadido por ${r.addedByName}
+                            </div>
+                        </div>
+                        <div class="restaurant-actions">
+                            <a href="${getMapLink(r.lat, r.lng, r.name, r.address)}" 
+                               class="btn-map" target="_blank" rel="noopener">Ver en Mapa</a>
+                            ${(isAdmin() || r.addedBy === currentUser.uid) ? 
+                              `<button class="btn-delete" onclick="deleteRestaurant('${r.id}', '${r.addedBy}')">🗑️</button>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getMapLink(lat, lng, name, address) {
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            if (lat && lng) {
+                return isMobile ? `https://maps.google.com/?q=${lat},${lng}` : 
+                       `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
+            }
+            const query = encodeURIComponent(`${name} ${address}`);
+            return isMobile ? `https://maps.google.com/?q=${query}` :
+                   `https://www.google.com/maps/search/?api=1&query=${query}`;
+        }
+
+        // =====================================================
+        // MODAL Y GOOGLE PLACES
+        // =====================================================
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+            document.getElementById('searchPlace').value = '';
+            document.getElementById('searchResults').style.display = 'none';
+            document.getElementById('manualName').value = '';
+            document.getElementById('manualAddress').value = '';
+            document.getElementById('manualCity').value = '';
+            document.getElementById('manualCountry').value = '';
+            document.getElementById('cuisine').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('photoUrl').value = '';
+            document.getElementById('notes').value = '';
+            document.getElementById('addRestaurantError').classList.remove('show');
+            selectedPlace = null;
+        }
+
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+        }
+
+        function initGooglePlaces() {
+            if (window.google && window.google.maps && window.google.maps.places) {
+                autocompleteService = new google.maps.places.AutocompleteService();
+                const map = new google.maps.Map(document.createElement('div'));
+                placesService = new google.maps.places.PlacesService(map);
+                document.getElementById('searchPlace').placeholder = '✓ Busca tu restaurante aquí...';
+            }
+        }
+
+        function searchGooglePlaces() {
+            const query = document.getElementById('searchPlace').value.trim();
+            const resultsDiv = document.getElementById('searchResults');
+
+            if (searchTimeout) clearTimeout(searchTimeout);
+
+            if (query.length < 3) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            searchTimeout = setTimeout(() => {
+                if (!autocompleteService) initGooglePlaces();
+                if (!autocompleteService) return;
+
+                autocompleteService.getPlacePredictions({
+                    input: query,
+                    types: ['restaurant', 'cafe', 'food']
+                }, displaySearchResults);
+            }, 300);
+        }
+
+        function displaySearchResults(predictions, status) {
+            const resultsDiv = document.getElementById('searchResults');
+            
+            if (status !== google.maps.places.PlacesServiceStatus.OK || !predictions) {
+                resultsDiv.style.display = 'none';
+                return;
+            }
+
+            resultsDiv.innerHTML = predictions.map(prediction => `
+                <div class="search-result-item" onclick="selectPlace('${prediction.place_id}')">
+                    <div class="result-name">${prediction.structured_formatting.main_text}</div>
+                    <div class="result-address">${prediction.structured_formatting.secondary_text || ''}</div>
+                </div>
+            `).join('');
+            
+            resultsDiv.style.display = 'block';
+        }
+
+        function selectPlace(placeId) {
+            if (!placesService) {
+                initGooglePlaces();
+                if (!placesService) {
+                    alert('Google Places no está disponible. Completa el formulario manualmente.');
+                    return;
+                }
+            }
+
+            placesService.getDetails({
+                placeId: placeId,
+                fields: ['name', 'formatted_address', 'geometry', 'photos', 'price_level', 'types']
+            }, (place, status) => {
+                if (status === google.maps.places.PlacesServiceStatus.OK) {
+                    selectedPlace = place;
+                    document.getElementById('searchResults').style.display = 'none';
+                    document.getElementById('searchPlace').value = place.name;
+                    
+                    document.getElementById('manualName').value = place.name;
+                    document.getElementById('manualAddress').value = place.formatted_address;
+                    
+                    const addr = parseAddress(place.formatted_address);
+                    document.getElementById('manualCity').value = addr.city;
+                    document.getElementById('manualCountry').value = addr.country;
+                    document.getElementById('cuisine').value = extractCuisineType(place.types);
+                    document.getElementById('price').value = place.price_level ? '€'.repeat(place.price_level) : '€€';
+                }
+            });
+        }
+
+        function extractCuisineType(types) {
+            const cuisineMap = {
+                'italian_restaurant': 'Italiana', 'japanese_restaurant': 'Japonesa',
+                'chinese_restaurant': 'China', 'mexican_restaurant': 'Mexicana',
+                'french_restaurant': 'Francesa', 'indian_restaurant': 'India',
+                'thai_restaurant': 'Tailandesa', 'spanish_restaurant': 'Española',
+                'mediterranean_restaurant': 'Mediterránea', 'american_restaurant': 'Americana',
+                'seafood_restaurant': 'Mariscos', 'steakhouse': 'Carnes',
+                'vegetarian_restaurant': 'Vegetariana', 'vegan_restaurant': 'Vegana',
+                'pizza_restaurant': 'Pizzería', 'cafe': 'Café', 'bakery': 'Panadería'
+            };
+            for (let type of types) {
+                if (cuisineMap[type]) return cuisineMap[type];
+            }
+            return 'Internacional';
+        }
+
+        function parseAddress(address) {
+            const parts = address.split(',').map(p => p.trim());
+            return {
+                city: parts.length >= 2 ? parts[parts.length - 2] : 'Desconocida',
+                country: parts[parts.length - 1] || 'Desconocido'
+            };
+        }
+
+        // Load Google Maps API
+        function loadGoogleMapsAPI() {
+            if (window.google?.maps?.places) return;
+            window.googleMapsCallback = function() {
+                setTimeout(() => {
+                    if (window.google?.maps?.places) initGooglePlaces();
+                }, 100);
+            };
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyC2t52EOqa7pShhw_TvBroBAOfH4SyVgvo&libraries=places&callback=googleMapsCallback`;
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
+
+        loadGoogleMapsAPI();
+
+        document.getElementById('addModal').addEventListener('click', (e) => {
+            if (e.target.id === 'addModal') closeAddModal();
+        });
+
+        // Exponer funciones necesarias globalmente
+        window.login = login;
+        window.register = register;
+        window.logout = logout;
+        window.showLoginForm = showLoginForm;
+        window.showRegisterForm = showRegisterForm;
+        window.switchTab = switchTab;
+        window.filterRestaurants = filterRestaurants;
+        window.updateCityFilter = updateCityFilter;
+        window.openAddModal = openAddModal;
+        window.closeAddModal = closeAddModal;
+        window.saveRestaurant = saveRestaurant;
+        window.deleteRestaurant = deleteRestaurant;
+        window.searchGooglePlaces = searchGooglePlaces;
+        window.selectPlace = selectPlace;
+    </script>
+</body>
+</html>
